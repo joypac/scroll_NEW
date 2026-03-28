@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Miguel Ortigão — Arquitectura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --drawer-width: clamp(220px, 28vw, 300px);
+      --drawer-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      background: #f5f5f3;
+      overflow-x: clip;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 300;
+    }
+
+    #site-shell {
+      transition: transform 0.35s var(--drawer-ease);
+      will-change: transform;
+    }
+
+    body.drawer-open #site-shell {
+      transform: translateX(var(--drawer-width));
+    }
+
+    /* ── Contact dot ──────────────────────────────────────── */
+
+    #contact-toggle {
+      position: fixed;
+      left: 16px;
+      top: 50%;
+      width: 28px;
+      height: 28px;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      z-index: 60;
+      transition: transform 0.35s var(--drawer-ease);
+    }
+
+    #contact-toggle::before {
+      content: '';
+      display: block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #555;
+    }
+
+    body.drawer-open #contact-toggle {
+      transform: translateY(-50%) translateX(var(--drawer-width));
+    }
+
+    /* ── Drawer ───────────────────────────────────────────── */
+
+    #contact-drawer {
+      position: fixed;
+      left: 0; top: 0;
+      width: var(--drawer-width);
+      height: 100vh;
+      background: #efefeb;
+      border-right: 1px solid rgba(0,0,0,0.07);
+      padding: 28px 24px;
+      transform: translateX(calc(-1 * var(--drawer-width) - 2px));
+      transition: transform 0.35s var(--drawer-ease);
+      z-index: 55;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    body.drawer-open #contact-drawer { transform: translateX(0); }
+
+    .drawer-name {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #111;
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+    }
+
+    .drawer-role {
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+      margin: 2px 0 1.4rem;
+    }
+
+    .drawer-link {
+      display: block;
+      color: #222;
+      text-decoration: none;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-top: 0.15rem;
+      width: fit-content;
+      border-bottom: 1px solid rgba(0,0,0,0.2);
+    }
+
+    .drawer-link:hover { border-bottom-color: rgba(0,0,0,0.7); }
+
+    /* ── Mosaic ───────────────────────────────────────────── */
+
+    /*
+      3-column grid. Rows size to content (grid-auto-rows: auto).
+      align-items: start → cells shrink-wrap their image; no stretching.
+      gap: 1px           → hairline separator between cells.
+      Images: width 100%, height auto → preserves ratio, no crop.
+    */
+
+    #mosaic, .mosaic-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: auto;
+      gap: 1px;
+      background: #f5f5f3;
+    }
+
+    .mosaic-cell {
+      position: relative;
+      background: #f5f5f3;
+      overflow: hidden;
+      aspect-ratio: 1; /* square cell — eliminates white holes */
+    }
+
+    /* Images and videos fill the cell identically */
+    .mosaic-cell img,
+    .mosaic-cell video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Hover darken */
+    .mosaic-cell::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      transition: background 0.22s;
+      pointer-events: none;
+    }
+
+    .mosaic-cell:hover::after { background: rgba(0,0,0,0.16); }
+
+    /* Project name label — appears on hover */
+    .mosaic-label {
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 300;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 0.22s;
+      pointer-events: none;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+      z-index: 1;
+    }
+
+    .mosaic-cell:hover .mosaic-label { opacity: 1; }
+
+    .is-video .mosaic-label::after {
+      content: ' ▶';
+      font-size: 0.55rem;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 720px) {
+      :root { --drawer-width: min(82vw, 300px); }
+      #contact-toggle { left: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<button id="contact-toggle" aria-label="Abrir contacto" aria-controls="contact-drawer" aria-expanded="false"></button>
+
+<aside id="contact-drawer" aria-label="Contacto">
+  <div>
+    <p class="drawer-name">Miguel Ortigão</p>
+    <p class="drawer-role">Arquitectura</p>
+    <a class="drawer-link" href="mailto:mo@miguelortigao.com">mo@miguelortigao.com</a>
+    <a class="drawer-link" href="tel:+351930708315">+351 930 708 315</a>
+    <a class="drawer-link" href="https://instagram.com/miguelortigao" target="_blank" rel="noreferrer noopener">Instagram</a>
+  </div>
+</aside>
+
+<div id="site-shell">
+  <div id="mosaic"></div>
+  <div id="scroll-sentinel"></div>
+</div>
+
+<script>
+  /* ── Data ─────────────────────────────────────────────────
+     Format notes:
+       HEIC → Safari/macOS/iOS only
+       TIF  → not supported by browsers (convert to JPG)
+       MOV  → Safari + Chrome (H.264); may fail on Firefox
+  ── */
+
+  var projects = [
+    {
+      name: 'banco',
+      media: [
+        { src: 'BANCO1.JPG', type: 'img' },
+        { src: 'BANCO2.JPG', type: 'img' },
+        { src: 'BANCO3.JPG', type: 'img' }
+      ]
+    },
+    {
+      name: 'fairly',
+      media: [
+        { src: 'FAIRLY1.jpg',   type: 'img' },
+        { src: 'FAIRLY2.jpg',   type: 'img' },
+        { src: 'FAIRLY3.jpg',   type: 'img' },
+        { src: 'FAIRLY5.jpg',   type: 'img' },
+        { src: 'FAIRLY7.jpg',   type: 'img' },
+        { src: 'FAIRLY9.jpg',   type: 'img' },
+        { src: 'FAIRLY10.jpg',  type: 'img' },
+        { src: 'FAIRLY11.jpg',  type: 'img' },
+        { src: 'FAIRLY12.jpg',  type: 'img' },
+        { src: 'FAIRLY13.jpg',  type: 'img' },
+        { src: 'FAIRLY14.jpg',  type: 'img' },
+        { src: 'FAIRLY16.jpg',  type: 'img' },
+        { src: 'FAIRLY17.jpg',  type: 'img' },
+        { src: 'FAIRLY29.JPG',  type: 'img' },
+        { src: 'FAIRLY31.jpg', type: 'img' },
+        { src: 'FAIRLY32.jpg', type: 'img' },
+        { src: 'FAIRLY33.jpg', type: 'img' },
+        { src: 'FAIRLY34.jpg', type: 'img' },
+        { src: 'FAIRLY35.jpg', type: 'img' },
+        { src: 'FAIRLY36.jpg', type: 'img' },
+        { src: 'FAIRLY37.jpg', type: 'img' },
+        { src: 'FAIRLY38.jpg', type: 'img' },
+        { src: 'FAIRLY39.jpg', type: 'img' },
+        { src: 'FAIRLY41.jpg', type: 'img' },
+        { src: 'FAIRLY42.jpg', type: 'img' },
+        { src: 'FAIRLY43.jpg', type: 'img' },
+        { src: 'FAIRLY18.mov',  type: 'vid' },
+        { src: 'FAIRLY19.mov',  type: 'vid' },
+        { src: 'FAIRLY20.mov',  type: 'vid' },
+        { src: 'FAIRLY21.mov',  type: 'vid' },
+        { src: 'FAIRLY22.mov',  type: 'vid' },
+        { src: 'FAIRLY23.mov',  type: 'vid' },
+        { src: 'FAIRLY24.mov',  type: 'vid' },
+        { src: 'FAIRLY25.mov',  type: 'vid' },
+        { src: 'FAIRLY26.mov',  type: 'vid' },
+        { src: 'FAIRLY27.MOV',  type: 'vid' },
+        { src: 'FAIRLY28.MOV',  type: 'vid' },
+        { src: 'FAIRLY30.MOV',  type: 'vid' }
+      ]
+    },
+    {
+      name: 'mustique',
+      media: [
+        { src: 'MUSTIQUE1.jpg',   type: 'img' },
+        { src: 'MUSTIQUE2.jpg',   type: 'img' },
+        { src: 'MUSTIQUE3.jpg',   type: 'img' },
+        { src: 'MUSTIQUE4.jpg',   type: 'img' },
+        { src: 'MUSTIQUE5.jpg',   type: 'img' },
+        { src: 'MUSTIQUE6.jpg',  type: 'img' },
+        { src: 'MUSTIQUE7.jpg',  type: 'img' },
+        { src: 'MUSTIQUE8.jpg',  type: 'img' },
+        { src: 'MUSTIQUE9.jpg',  type: 'img' },
+        { src: 'MUSTIQUE10.jpg', type: 'img' },
+        { src: 'MUSTIQUE13.jpg', type: 'img' },
+        { src: 'MUSTIQUE14.jpg', type: 'img' },
+        { src: 'MUSTIQUE15.jpg', type: 'img' },
+        { src: 'MUSTIQUE16.jpg', type: 'img' },
+        { src: 'MUSTIQUE17.jpg', type: 'img' },
+        { src: 'MUSTIQUE18.jpg', type: 'img' },
+        { src: 'MUSTIQUE19.jpg', type: 'img' },
+        { src: 'MUSTIQUE20.jpg', type: 'img' },
+        { src: 'MUSTIQUE21.jpg', type: 'img' },
+        { src: 'MUSTIQUE22.jpg', type: 'img' },
+        { src: 'MUSTIQUE23.jpg', type: 'img' },
+        { src: 'MUSTIQUE24.jpg', type: 'img' },
+        { src: 'MUSTIQUE26.jpg', type: 'img' },
+        { src: 'MUSTIQUE27.jpg', type: 'img' },
+        { src: 'MUSTIQUE28.jpg', type: 'img' },
+        { src: 'MUSTIQUE29.jpg', type: 'img' }
+      ]
+    },
+    {
+      name: 'paez',
+      media: [
+        { src: 'PAEZ1.jpg',       type: 'img' },
+        { src: 'PAEZ2.jpg',       type: 'img' },
+        { src: 'PAEZ3.jpg',       type: 'img' },
+        { src: 'PAEZ4.jpg',       type: 'img' },
+        { src: 'PAEZ5.jpg',       type: 'img' },
+        { src: 'PAEZ6.jpg',   type: 'img' },
+        { src: 'PAEZ7.jpg',   type: 'img' },
+        { src: 'PAEZ8.jpg',   type: 'img' },
+        { src: 'PAEZ9.jpg',   type: 'img' },
+        { src: 'PAEZ10.jpg',  type: 'img' },
+        { src: 'PAEZ11.jpg',  type: 'img' },
+        { src: 'PAEZ12.jpg',  type: 'img' },
+        { src: 'PAEZ13.jpg',  type: 'img' },
+        { src: 'PAEZ14.jpg',  type: 'img' },
+        { src: 'PAEZ15.jpg',  type: 'img' },
+        { src: 'PAEZ16.jpg',  type: 'img' },
+        { src: 'PAEZ17.jpg',  type: 'img' },
+        { src: 'PAEZ18.jpg',  type: 'img' },
+        { src: 'PAEZ19.jpg',  type: 'img' },
+        { src: 'PAEZ_9Fev23.mov', type: 'vid' }
+      ]
+    },
+    {
+      name: 'peça',
+      media: [
+        { src: 'PEÇA1.JPG', type: 'img' },
+        { src: 'PEÇA2.JPG', type: 'img' },
+        { src: 'PEÇA3.JPG', type: 'img' },
+        { src: 'PEÇA4.JPG', type: 'img' }
+      ]
+    },
+    {
+      name: 'lapa lofts',
+      media: [
+        { src: 'LAPA_LOFTS.MOV', type: 'vid' }
+      ]
+    }
+  ];
+
+  /* ── Helpers ──────────────────────────────────────────── */
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  var DIRS = [[-1,0],[1,0],[0,-1],[0,1]];
+
+  /* ── Compact grid builder ─────────────────────────────────
+     Fills a COLS×ROWS grid completely with project indices.
+     No empty cells. Uses multi-source BFS with an anti-snake
+     heuristic: prefer expanding into cells that already have
+     2+ project neighbours (makes blobs, not tendrils).
+  ── */
+
+  function buildGrid(projects, displayedMedia, COLS) {
+    var total = projects.reduce(function(s, p) { return s + p.media.length; }, 0);
+    var ROWS  = Math.ceil(total / COLS);
+
+    // grid[r][c] = project index, -1 = empty
+    var grid = [];
+    for (var r = 0; r < ROWS; r++) {
+      var row = [];
+      for (var c = 0; c < COLS; c++) row.push(-1);
+      grid.push(row);
+    }
+
+    // Shuffle project order and plant spaced-out seeds
+    var order   = shuffle(projects.map(function(_, i) { return i; }));
+    var step    = Math.max(1, Math.floor(ROWS / projects.length));
+
+    order.forEach(function(pi, oi) {
+      var r = Math.min(oi * step, ROWS - 1);
+      var c = Math.floor(Math.random() * COLS);
+      for (var i = 0; i < ROWS * COLS; i++) {
+        if (grid[r][c] === -1) { grid[r][c] = pi; return; }
+        c = (c + 1) % COLS;
+        if (c === 0) r = (r + 1) % ROWS;
+      }
+    });
+
+    // Count placed seeds
+    var counts = projects.map(function(_, pi) {
+      var n = 0;
+      for (var r = 0; r < ROWS; r++)
+        for (var c = 0; c < COLS; c++)
+          if (grid[r][c] === pi) n++;
+      return n;
+    });
+
+    // Expand all projects round-robin until each hits its quota
+    var growing = true;
+    while (growing) {
+      growing = false;
+      order.forEach(function(pi) {
+        if (counts[pi] >= projects[pi].media.length) return;
+
+        // Build scored frontier (adjacent empty cells)
+        var frontier = [], seen = {};
+        for (var r = 0; r < ROWS; r++) {
+          for (var c = 0; c < COLS; c++) {
+            if (grid[r][c] !== pi) continue;
+            for (var di = 0; di < DIRS.length; di++) {
+              var nr = r + DIRS[di][0], nc = c + DIRS[di][1];
+              var key = nr + ',' + nc;
+              if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) continue;
+              if (grid[nr][nc] !== -1 || seen[key]) continue;
+              seen[key] = true;
+              // Score = number of existing pi-neighbours (anti-snake: prefer pockets)
+              var score = 0;
+              for (var dj = 0; dj < DIRS.length; dj++) {
+                var ar = nr + DIRS[dj][0], ac = nc + DIRS[dj][1];
+                if (ar >= 0 && ar < ROWS && ac >= 0 && ac < COLS && grid[ar][ac] === pi) score++;
+              }
+              frontier.push([nr, nc, score]);
+            }
+          }
+        }
+
+        var pick;
+        if (frontier.length > 0) {
+          // Pick from cells with the highest score (most neighbours = blobby, not snake)
+          frontier.sort(function(a, b) { return b[2] - a[2]; });
+          var best = frontier[0][2];
+          var top  = [];
+          for (var i = 0; i < frontier.length && frontier[i][2] === best; i++) top.push(frontier[i]);
+          pick = top[Math.floor(Math.random() * top.length)];
+        } else {
+          // Completely surrounded — pick any remaining empty cell (fallback)
+          var any = [];
+          for (var r = 0; r < ROWS; r++)
+            for (var c = 0; c < COLS; c++)
+              if (grid[r][c] === -1) any.push([r, c, 0]);
+          if (any.length === 0) return;
+          pick = any[Math.floor(Math.random() * any.length)];
+        }
+
+        grid[pick[0]][pick[1]] = pi;
+        counts[pi]++;
+        growing = true;
+      });
+    }
+
+    // Flood-fill any remaining empty cells with the nearest project
+    // (at most COLS-1 cells can remain unfilled if total % COLS !== 0)
+    var changed = true;
+    while (changed) {
+      changed = false;
+      for (var r = 0; r < ROWS; r++) {
+        for (var c = 0; c < COLS; c++) {
+          if (grid[r][c] !== -1) continue;
+          for (var di = 0; di < DIRS.length; di++) {
+            var nr = r + DIRS[di][0], nc = c + DIRS[di][1];
+            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && grid[nr][nc] !== -1) {
+              grid[r][c] = grid[nr][nc];
+              changed = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return { grid: grid, rows: ROWS, cols: COLS };
+  }
+
+  /* ── Render ───────────────────────────────────────────── */
+
+  // Shared IntersectionObserver for all video tiles across all grids
+  var vidObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      var v = e.target.querySelector('video');
+      if (!v) return;
+      if (e.isIntersecting) v.play().catch(function() {});
+      else v.pause();
+    });
+  }, { threshold: 0.15 });
+
+  function buildMosaicLayout(container) {
+    var COLS = 3;
+    var displayedMedia = projects.map(function(p) { return shuffle(p.media); });
+    var layout = buildGrid(projects, displayedMedia, COLS);
+    var grid = layout.grid, ROWS = layout.rows;
+
+    var imgIdx = projects.map(function() { return 0; });
+
+    for (var r = 0; r < ROWS; r++) {
+      for (var c = 0; c < COLS; c++) {
+        var pi  = grid[r][c];
+        var idx = imgIdx[pi]++;
+        var media = displayedMedia[pi];
+
+        if (idx >= media.length) {
+          container.appendChild(document.createElement('div'));
+          continue;
+        }
+
+        var item = media[idx];
+        var div  = document.createElement('div');
+        div.className = 'mosaic-cell' + (item.type === 'vid' ? ' is-video' : '');
+
+        if (item.type === 'vid') {
+          var video = document.createElement('video');
+          video.muted = true;
+          video.loop  = true;
+          video.setAttribute('playsinline', '');
+          video.setAttribute('preload', 'none');
+          var vsrc = document.createElement('source');
+          vsrc.src = item.src;
+          video.appendChild(vsrc);
+          div.appendChild(video);
+          vidObs.observe(div);
+        } else {
+          var img = document.createElement('img');
+          img.src      = item.src;
+          img.alt      = projects[pi].name;
+          img.loading  = 'lazy';
+          img.decoding = 'async';
+          div.appendChild(img);
+        }
+
+        var label = document.createElement('span');
+        label.className   = 'mosaic-label';
+        label.textContent = projects[pi].name;
+        div.appendChild(label);
+
+        container.appendChild(div);
+      }
+    }
+  }
+
+  // First grid
+  buildMosaicLayout(document.getElementById('mosaic'));
+
+  // Infinite scroll: append a new randomised grid when sentinel comes into view
+  var sentinel = document.getElementById('scroll-sentinel');
+  var appending = false;
+
+  new IntersectionObserver(function(entries) {
+    if (!entries[0].isIntersecting || appending) return;
+    appending = true;
+    var grid = document.createElement('div');
+    grid.className = 'mosaic-grid';
+    sentinel.parentNode.insertBefore(grid, sentinel);
+    buildMosaicLayout(grid);
+    appending = false;
+  }, { rootMargin: '400px' }).observe(sentinel);
+
+  /* ── Drawer ───────────────────────────────────────────── */
+
+  var drawerToggle = document.getElementById('contact-toggle');
+  var drawer       = document.getElementById('contact-drawer');
+
+  function isDrawerOpen() { return document.body.classList.contains('drawer-open'); }
+  function openDrawer()   { document.body.classList.add('drawer-open');    drawerToggle.setAttribute('aria-expanded', 'true'); }
+  function closeDrawer()  { document.body.classList.remove('drawer-open'); drawerToggle.setAttribute('aria-expanded', 'false'); }
+
+  drawerToggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (isDrawerOpen()) closeDrawer(); else openDrawer();
+  });
+
+  drawer.addEventListener('click', function(e) {
+    if (!isDrawerOpen()) return;
+    var sel = window.getSelection && window.getSelection();
+    if (sel && !sel.isCollapsed) return;
+    if (e.target.closest('a')) return;
+    closeDrawer();
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!isDrawerOpen()) return;
+    var sel = window.getSelection && window.getSelection();
+    if (sel && !sel.isCollapsed) return;
+    if (e.target === drawerToggle || drawer.contains(e.target)) return;
+    closeDrawer();
+  });
+
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && isDrawerOpen()) closeDrawer();
+  });
+</script>
+</body>
+</html>
