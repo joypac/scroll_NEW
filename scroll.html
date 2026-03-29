@@ -124,6 +124,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-auto-rows: auto;
+      align-items: start;
       gap: 1px;
       background: #f5f5f3;
     }
@@ -132,16 +133,14 @@
       position: relative;
       background: #f5f5f3;
       overflow: hidden;
-      aspect-ratio: 1; /* square cell — eliminates white holes */
     }
 
-    /* Images and videos fill the cell identically */
+    /* Images and videos: full width, natural height — no crop, no forced ratio */
     .mosaic-cell img,
     .mosaic-cell video {
       display: block;
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;
     }
 
     /* Hover darken */
@@ -219,18 +218,18 @@
     {
       name: 'banco',
       media: [
-        { src: 'BANCO1.JPG', type: 'img' },
-        { src: 'BANCO2.JPG', type: 'img' },
-        { src: 'BANCO3.JPG', type: 'img' }
+        { src: 'BANCO1.jpg', type: 'img' },
+        { src: 'BANCO2.jpg', type: 'img' },
+        { src: 'BANCO3.jpg', type: 'img' }
       ]
     },
     {
       name: 'fairly',
       media: [
-        { src: 'FAIRLY1.jpg',   type: 'img' },
-        { src: 'FAIRLY2.jpg',   type: 'img' },
-        { src: 'FAIRLY3.jpg',   type: 'img' },
-        { src: 'FAIRLY5.jpg',   type: 'img' },
+        { src: 'fairly1.jpg',   type: 'img' },
+        { src: 'fairly2.jpg',   type: 'img' },
+        { src: 'fairly3.jpg',   type: 'img' },
+        { src: 'fairly5.jpg',   type: 'img' },
         { src: 'FAIRLY7.jpg',   type: 'img' },
         { src: 'FAIRLY9.jpg',   type: 'img' },
         { src: 'FAIRLY10.jpg',  type: 'img' },
@@ -240,7 +239,7 @@
         { src: 'FAIRLY14.jpg',  type: 'img' },
         { src: 'FAIRLY16.jpg',  type: 'img' },
         { src: 'FAIRLY17.jpg',  type: 'img' },
-        { src: 'FAIRLY29.JPG',  type: 'img' },
+        { src: 'FAIRLY29.jpg',  type: 'img' },
         { src: 'FAIRLY31.jpg', type: 'img' },
         { src: 'FAIRLY32.jpg', type: 'img' },
         { src: 'FAIRLY33.jpg', type: 'img' },
@@ -270,11 +269,11 @@
     {
       name: 'mustique',
       media: [
-        { src: 'MUSTIQUE1.jpg',   type: 'img' },
-        { src: 'MUSTIQUE2.jpg',   type: 'img' },
-        { src: 'MUSTIQUE3.jpg',   type: 'img' },
-        { src: 'MUSTIQUE4.jpg',   type: 'img' },
-        { src: 'MUSTIQUE5.jpg',   type: 'img' },
+        { src: 'mustique1.jpg',   type: 'img' },
+        { src: 'mustique2.jpg',   type: 'img' },
+        { src: 'mustique3.jpg',   type: 'img' },
+        { src: 'mustique4.jpg',   type: 'img' },
+        { src: 'mustique5.jpg',   type: 'img' },
         { src: 'MUSTIQUE6.jpg',  type: 'img' },
         { src: 'MUSTIQUE7.jpg',  type: 'img' },
         { src: 'MUSTIQUE8.jpg',  type: 'img' },
@@ -301,11 +300,11 @@
     {
       name: 'paez',
       media: [
-        { src: 'PAEZ1.jpg',       type: 'img' },
-        { src: 'PAEZ2.jpg',       type: 'img' },
-        { src: 'PAEZ3.jpg',       type: 'img' },
-        { src: 'PAEZ4.jpg',       type: 'img' },
-        { src: 'PAEZ5.jpg',       type: 'img' },
+        { src: 'paez1.jpg',       type: 'img' },
+        { src: 'paez2.jpg',       type: 'img' },
+        { src: 'paez3.jpg',       type: 'img' },
+        { src: 'paez4.jpg',       type: 'img' },
+        { src: 'paez5.jpg',       type: 'img' },
         { src: 'PAEZ6.jpg',   type: 'img' },
         { src: 'PAEZ7.jpg',   type: 'img' },
         { src: 'PAEZ8.jpg',   type: 'img' },
@@ -326,10 +325,9 @@
     {
       name: 'peça',
       media: [
-        { src: 'PEÇA1.JPG', type: 'img' },
-        { src: 'PEÇA2.JPG', type: 'img' },
-        { src: 'PEÇA3.JPG', type: 'img' },
-        { src: 'PEÇA4.JPG', type: 'img' }
+        { src: 'PECA1.jpg', type: 'img' },
+        { src: 'PECA2.jpg', type: 'img' },
+        { src: 'PECA3.jpg', type: 'img' }
       ]
     },
     {
@@ -511,7 +509,7 @@
           video.muted = true;
           video.loop  = true;
           video.setAttribute('playsinline', '');
-          video.setAttribute('preload', 'none');
+          video.setAttribute('preload', 'metadata');
           var vsrc = document.createElement('source');
           vsrc.src = item.src;
           video.appendChild(vsrc);
