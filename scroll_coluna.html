@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Miguel Ortigão — Arquitetura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'Clash Display';
+      src: url('ClashDisplay-Regular.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 500;
+    }
+
+    @font-face {
+      font-family: 'Neue Montreal';
+      src: url('PPNeueMontreal-Book.otf') format('opentype');
+      font-style: normal;
+      font-weight: 400;
+    }
+
+    @font-face {
+      font-family: 'Walter Neue';
+      src: url('ABCWalterNeue-Regular-Trial.otf') format('opentype');
+      font-style: normal;
+      font-weight: 400;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --door-ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --door-left: 16px;
+      --door-top: 33.335vh;
+      --door-top-abs: 33.335vh;
+      --door-height: 33.33vh;
+      --door-line-width: 6px;
+    }
+
+    body {
+      background: #f5f5f3;
+      overflow-x: clip;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 300;
+    }
+
+    #site-shell {
+      transform-origin: calc(var(--door-left) + (var(--door-line-width) / 2)) var(--door-top-abs);
+      transition: transform 0.7s var(--door-ease);
+      will-change: transform;
+    }
+
+    body.drawer-open #site-shell {
+      transform: rotate(-90deg);
+    }
+
+    /* ── Door (linha + texto = um elemento que roda) ────────── */
+
+    #door-wrap {
+      position: fixed;
+      left: var(--door-left);
+      top: var(--door-top);
+      z-index: 60;
+      transform-origin: calc(var(--door-line-width) / 2) 0;
+      transition: transform 0.7s var(--door-ease);
+      cursor: pointer;
+      user-select: none;
+      padding: 0 18px 0 0;
+    }
+
+    body.drawer-open #door-wrap {
+      transform: rotate(-90deg);
+    }
+
+    #door-line {
+      position: relative;
+      width: var(--door-line-width);
+      height: var(--door-height);
+      background: #111;
+    }
+
+    #door-text {
+      position: absolute;
+      text-align: left;
+      left: -120vw;
+      top: 0;
+      transform: rotate(90deg);
+      transform-origin: top left;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: none;
+    }
+
+    body.drawer-open #door-text,
+    body.door-closing #door-text {
+      left: -28px;
+      pointer-events: auto;
+    }
+
+    .contact-name {
+      font-family: 'Walter Neue', sans-serif;
+      font-size: 4.9rem;
+      font-weight: 500;
+      color: #111;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      line-height: 1;
+      margin-top: 100px;
+    }
+
+    .contact-role {
+      font-family: 'Walter Neue', sans-serif;
+      font-size: 2.1rem;
+      font-weight: 500;
+      color: #111;
+      letter-spacing: normal;
+      text-transform: uppercase;
+      margin: 6px 0 1rem;
+    }
+
+    .contact-link {
+      display: block;
+      font-family: 'Neue Montreal', sans-serif;
+      font-size: 2.45rem;
+      color: #111;
+      text-decoration: none;
+      line-height: 1.35;
+      transition: opacity 0.2s;
+    }
+
+    .contact-link:hover { opacity: 0.5; }
+
+    /* ── Mosaic ───────────────────────────────────────────── */
+
+    /*
+      3-column grid. Rows size to content (grid-auto-rows: auto).
+      align-items: start → cells shrink-wrap their image; no stretching.
+      gap: 1px           → hairline separator between cells.
+      Images: width 100%, height auto → preserves ratio, no crop.
+    */
+
+    #mosaic {
+      columns: 3;
+      column-gap: 1px;
+      background: #f5f5f3;
+    }
+
+    .mosaic-cell {
+      position: relative;
+      background: #f5f5f3;
+      overflow: hidden;
+      break-inside: avoid;
+      margin-bottom: 1px;
+    }
+
+    /* Images and videos: full width, natural height — no crop, no forced ratio */
+    .mosaic-cell img,
+    .mosaic-cell video {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* Labels — hidden, kept for future use */
+    .mosaic-label {
+      display: none;
+    }
+
+    @media (max-width: 720px) {
+      #mosaic { columns: 2; }
+      .contact-name { font-size: 3.325rem; }
+      .contact-role { font-size: 1.6625rem; }
+      .contact-link { font-size: 1.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="door-wrap" role="button" aria-label="Abrir contacto" aria-expanded="false" tabindex="0">
+  <div id="door-line"></div>
+  <div id="door-text">
+    <p class="contact-name">MIGUEL ORTIGÃO</p>
+    <p class="contact-role">ARQUITETURA</p>
+    <a class="contact-link" href="mailto:mo@miguelortigao.com">mo@miguelortigao.com</a>
+    <a class="contact-link" href="tel:+351930708315">+351 930 708 315</a>
+    <a class="contact-link" href="https://instagram.com/miguelortigao" target="_blank" rel="noreferrer noopener">Instagram</a>
+  </div>
+</div>
+
+<div id="site-shell">
+  <div id="mosaic"></div>
+  <div id="scroll-sentinel"></div>
+</div>
+
+<script>
+  /* ── Data ─────────────────────────────────────────────────
+     Format notes:
+       HEIC → Safari/macOS/iOS only
+       TIF  → not supported by browsers (convert to JPG)
+       MOV  → Safari + Chrome (H.264); may fail on Firefox
+  ── */
+
+  var projects = [
+    {
+      name: 'banco',
+      media: [
+        { src: 'BANCO1.jpg', type: 'img' },
+        { src: 'BANCO2.jpg', type: 'img' },
+        { src: 'BANCO3.jpg', type: 'img' }
+      ]
+    },
+    {
+      name: 'fairly',
+      media: [
+        { src: 'fairly1.jpg',   type: 'img' },
+        { src: 'fairly2.jpg',   type: 'img' },
+        { src: 'fairly3.jpg',   type: 'img' },
+        { src: 'fairly5.jpg',   type: 'img' },
+        { src: 'FAIRLY9.jpg',   type: 'img' },
+        { src: 'FAIRLY10.jpg',  type: 'img' },
+        { src: 'FAIRLY11.jpg',  type: 'img' },
+        { src: 'FAIRLY12.jpg',  type: 'img' },
+        { src: 'FAIRLY13.jpg',  type: 'img' },
+        { src: 'FAIRLY16.jpg',  type: 'img' },
+        { src: 'FAIRLY17.jpg',  type: 'img' },
+        { src: 'FAIRLY31.jpg', type: 'img' },
+        { src: 'FAIRLY32.jpg', type: 'img' },
+        { src: 'FAIRLY33.jpg', type: 'img' },
+        { src: 'FAIRLY34.jpg', type: 'img' },
+        { src: 'FAIRLY35.jpg', type: 'img' },
+        { src: 'FAIRLY36.jpg', type: 'img' },
+        { src: 'FAIRLY37.jpg', type: 'img' },
+        { src: 'FAIRLY38.jpg', type: 'img' },
+        { src: 'FAIRLY39.jpg', type: 'img' },
+        { src: 'FAIRLY41.jpg', type: 'img' },
+        { src: 'FAIRLY42.jpg', type: 'img' },
+        { src: 'FAIRLY43.jpg', type: 'img' },
+        { src: 'FAIRLY18.mov',  type: 'vid' },
+        { src: 'FAIRLY19.mov',  type: 'vid' },
+        { src: 'FAIRLY20.mov',  type: 'vid' },
+        { src: 'FAIRLY21.mov',  type: 'vid' },
+        { src: 'FAIRLY22.mov',  type: 'vid' },
+        { src: 'FAIRLY23.mov',  type: 'vid' },
+        { src: 'FAIRLY24.mov',  type: 'vid' },
+        { src: 'FAIRLY25.mov',  type: 'vid' },
+        { src: 'FAIRLY26.mov',  type: 'vid' },
+        { src: 'FAIRLY27.MOV',  type: 'vid' },
+        { src: 'FAIRLY28.MOV',  type: 'vid' },
+        { src: 'FAIRLY30.MOV',  type: 'vid' }
+      ]
+    },
+    {
+      name: 'mustique',
+      media: [
+        { src: 'mustique1.jpg',   type: 'img' },
+        { src: 'mustique2.jpg',   type: 'img' },
+        { src: 'mustique3.jpg',   type: 'img' },
+        { src: 'mustique4.jpg',   type: 'img' },
+        { src: 'mustique5.jpg',   type: 'img' },
+        { src: 'MUSTIQUE7.jpg',  type: 'img' },
+        { src: 'MUSTIQUE9.jpg',  type: 'img' },
+        { src: 'MUSTIQUE13.jpg', type: 'img' },
+        { src: 'MUSTIQUE14.jpg', type: 'img' },
+        { src: 'MUSTIQUE15.jpg', type: 'img' },
+        { src: 'MUSTIQUE16.jpg', type: 'img' },
+        { src: 'MUSTIQUE17.jpg', type: 'img' },
+        { src: 'MUSTIQUE18.jpg', type: 'img' },
+        { src: 'MUSTIQUE19.jpg', type: 'img' },
+        { src: 'MUSTIQUE20.jpg', type: 'img' },
+        { src: 'MUSTIQUE21.jpg', type: 'img' },
+        { src: 'MUSTIQUE22.jpg', type: 'img' },
+        { src: 'MUSTIQUE23.jpg', type: 'img' },
+        { src: 'MUSTIQUE24.jpg', type: 'img' },
+        { src: 'MUSTIQUE27.jpg', type: 'img' },
+        { src: 'MUSTIQUE28.jpg', type: 'img' },
+        { src: 'MUSTIQUE29.jpg', type: 'img' }
+      ]
+    },
+    {
+      name: 'paez',
+      media: [
+        { src: 'paez1.jpg',       type: 'img' },
+        { src: 'paez2.jpg',       type: 'img' },
+        { src: 'paez3.jpg',       type: 'img' },
+        { src: 'paez4.jpg',       type: 'img' },
+        { src: 'paez5.jpg',       type: 'img' },
+        { src: 'PAEZ8.jpg',   type: 'img' },
+        { src: 'PAEZ9.jpg',   type: 'img' },
+        { src: 'PAEZ10.jpg',  type: 'img' },
+        { src: 'PAEZ11.jpg',  type: 'img' },
+        { src: 'PAEZ12.jpg',  type: 'img' },
+        { src: 'PAEZ13.jpg',  type: 'img' },
+        { src: 'PAEZ14.jpg',  type: 'img' },
+        { src: 'PAEZ15.jpg',  type: 'img' },
+        { src: 'PAEZ16.jpg',  type: 'img' },
+        { src: 'PAEZ17.jpg',  type: 'img' },
+        { src: 'PAEZ18.jpg',  type: 'img' },
+        { src: 'PAEZ19.jpg',  type: 'img' },
+        { src: 'paez_9fev.mov', type: 'vid' }
+      ]
+    },
+    {
+      name: 'peça',
+      media: [
+        { src: 'PEÇA1.jpg', type: 'img' },
+        { src: 'PECA2.jpg', type: 'img' },
+        { src: 'PEÇA3.jpg', type: 'img' }
+      ]
+    },
+    {
+      name: 'lapa lofts',
+      media: [
+        { src: 'LAPA_LOFTS.MOV', type: 'vid' }
+      ]
+    }
+  ];
+
+  /* ── Helpers ──────────────────────────────────────────── */
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  /* ── Render ───────────────────────────────────────────── */
+
+  // Shared IntersectionObserver for all video tiles across all grids
+  var vidObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      var v = e.target.querySelector('video');
+      if (!v) return;
+      if (e.isIntersecting) v.play().catch(function() {});
+      else v.pause();
+    });
+  }, { threshold: 0.15 });
+
+  function makeCell(item, projectName) {
+    var div = document.createElement('div');
+    div.className = 'mosaic-cell' + (item.type === 'vid' ? ' is-video' : '');
+
+    if (item.type === 'vid') {
+      var video = document.createElement('video');
+      video.muted = true;
+      video.loop  = true;
+      video.setAttribute('playsinline', '');
+      video.setAttribute('preload', 'metadata');
+      var vsrc = document.createElement('source');
+      vsrc.src = item.src;
+      video.appendChild(vsrc);
+      div.appendChild(video);
+      vidObs.observe(div);
+    } else {
+      var img = document.createElement('img');
+      img.src      = item.src;
+      img.alt      = projectName;
+      img.loading  = 'lazy';
+      img.decoding = 'async';
+      div.appendChild(img);
+    }
+
+    var label = document.createElement('span');
+    label.className   = 'mosaic-label';
+    label.textContent = projectName;
+    div.appendChild(label);
+
+    return div;
+  }
+
+  var mosaic = document.getElementById('mosaic');
+
+  function appendBatch() {
+    var order = shuffle(projects.map(function(_, i) { return i; }));
+    order.forEach(function(pi) {
+      var p     = projects[pi];
+      var media = shuffle(p.media.slice());
+      media.forEach(function(item) {
+        mosaic.appendChild(makeCell(item, p.name));
+      });
+    });
+  }
+
+  // First batch
+  appendBatch();
+
+  // Infinite scroll: append more items to the existing columns
+  var sentinel  = document.getElementById('scroll-sentinel');
+  var appending = false;
+
+  new IntersectionObserver(function(entries) {
+    if (!entries[0].isIntersecting || appending) return;
+    appending = true;
+    appendBatch();
+    appending = false;
+  }, { rootMargin: '400px' }).observe(sentinel);
+
+  /* ── Door ─────────────────────────────────────────────── */
+
+  var doorWrap = document.getElementById('door-wrap');
+
+  function syncDoorPivot(force) {
+    if (!force && document.body.classList.contains('drawer-open')) return;
+    var topVh = window.innerHeight * 0.33335;
+    var absoluteTop = window.scrollY + topVh;
+    document.documentElement.style.setProperty('--door-top-abs', absoluteTop + 'px');
+  }
+
+  syncDoorPivot();
+  window.addEventListener('scroll', syncDoorPivot, { passive: true });
+  window.addEventListener('resize', syncDoorPivot);
+
+  function isOpen()  { return document.body.classList.contains('drawer-open'); }
+  function openDoor()  {
+    syncDoorPivot(true);
+    document.body.classList.remove('door-closing');
+    document.body.classList.add('drawer-open');
+    doorWrap.setAttribute('aria-expanded', 'true');
+  }
+  function closeDoor() {
+    if (!isOpen()) return;
+    document.body.classList.add('door-closing');
+    document.body.classList.remove('drawer-open');
+    syncDoorPivot(true);
+    doorWrap.setAttribute('aria-expanded', 'false');
+  }
+  function toggleDoor() { isOpen() ? closeDoor() : openDoor(); }
+
+  doorWrap.addEventListener('transitionend', function(e) {
+    if (e.propertyName !== 'transform') return;
+    if (!isOpen()) document.body.classList.remove('door-closing');
+  });
+
+  doorWrap.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleDoor();
+  });
+
+  doorWrap.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    toggleDoor();
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!isOpen()) return;
+    if (doorWrap.contains(e.target)) return;
+    closeDoor();
+  });
+
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && isOpen()) closeDoor();
+  });
+</script>
+</body>
+</html>
