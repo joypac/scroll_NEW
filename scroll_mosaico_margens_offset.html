@@ -129,6 +129,7 @@
       font-family: 'Neue Montreal', sans-serif;
       font-size: clamp(1.1rem, 2.2vw, 1.95rem);
       color: #111;
+      text-transform: uppercase;
       text-decoration: none;
       line-height: 1.15;
       max-width: 72vw;
@@ -184,7 +185,7 @@
     /* Offset middle column so each tile center aligns near side-column tile edges. */
     .mosaic-grid > .mosaic-cell:nth-child(3n + 2),
     #mosaic > .mosaic-cell:nth-child(3n + 2) {
-      transform: translateY(50%);
+      transform: translateY(-50%);
     }
 
     /* Same margins for images and videos, with stable vertical rhythm and no crop. */
