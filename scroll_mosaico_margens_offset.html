@@ -45,6 +45,10 @@
       font-weight: 300;
     }
 
+    body.initial-load #door-wrap {
+      transition: none;
+    }
+
     /* ── Door (linha + texto = um elemento que roda) ────────── */
 
     #door-wrap {
@@ -81,10 +85,10 @@
       top: 0;
       transform: rotate(90deg);
       transform-origin: top left;
-      width: min(94vw, 1320px);
+      width: min(98vw, 1400px);
       min-height: 90vh;
       white-space: normal;
-      padding: 5vh 5vw 4vh;
+      padding: 5vh 1vw 4vh 5vw;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
@@ -99,6 +103,34 @@
       pointer-events: auto;
     }
 
+    .contact-logo {
+      display: inline-flex;
+      flex-direction: column;
+      align-self: flex-start;
+      transform: translate(0.3vw, 0.2vh);
+    }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      align-items: flex-start;
+      column-gap: clamp(1rem, 2.6vw, 2.8rem);
+      width: 100%;
+    }
+
+    .contact-links-rail {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-rows: repeat(3, 1fr);
+      align-self: flex-start;
+      width: 100%;
+      height: var(--contact-area-h, 0px);
+      transform: translateY(var(--contact-area-y, 0px));
+      padding-left: clamp(18px, 2.2vw, 44px);
+      padding-right: 0;
+      column-gap: clamp(10px, 1.1vw, 18px);
+    }
+
     .contact-name {
       font-family: 'Walter Neue', sans-serif;
       font-size: clamp(3.2rem, 9.2vw, 8.4rem);
@@ -106,10 +138,18 @@
       color: #111;
       letter-spacing: 0.02em;
       text-transform: uppercase;
-      line-height: 0.9;
-      white-space: nowrap;
+      line-height: 0.86;
+      white-space: normal;
       margin: 0;
-      transform: translate(0.3vw, 0.2vh);
+      transform: none;
+    }
+
+    .contact-name .name-line {
+      display: block;
+    }
+
+    .contact-name .name-line + .name-line {
+      margin-top: 0.15em;
     }
 
     .contact-role {
@@ -119,40 +159,37 @@
       color: #111;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin: 0 0 1.5vh;
+      margin: 0.38em 0 1.5vh;
       align-self: flex-end;
-      transform: translate(-0.5vw, -0.5vh) rotate(-1.2deg);
+      transform: translate(-6px, -5px);
     }
 
     .contact-link {
-      display: inline-block;
+      position: relative;
       font-family: 'Neue Montreal', sans-serif;
-      font-size: clamp(1.1rem, 2.2vw, 1.95rem);
+      font-size: clamp(1.375rem, 2.75vw, 2.4375rem);
       color: #111;
       text-transform: uppercase;
       text-decoration: none;
       line-height: 1.15;
-      max-width: 72vw;
-      transition: opacity 0.2s;
+      width: max-content;
+      text-align: center;
+      justify-self: center;
+      align-self: center;
+      white-space: nowrap;
+      background: transparent;
+      padding: 0.12em 0.36em;
+      transition: none;
     }
 
-    #door-text .contact-link:nth-of-type(1) {
-      align-self: flex-start;
-      margin-top: 0;
-      transform: translate(0.8vw, 0) rotate(0deg);
-    }
+    .contact-links-rail .contact-link:nth-child(1) { grid-row: 1; }
+    .contact-links-rail .contact-link:nth-child(2) { grid-row: 2; }
+    .contact-links-rail .contact-link:nth-child(3) { grid-row: 3; }
 
-    #door-text .contact-link:nth-of-type(2) {
-      align-self: flex-start;
-      transform: translate(0.8vw, 0.6vh) rotate(0deg);
+    .contact-link:hover {
+      opacity: 1;
+      background: #f5f5f3;
     }
-
-    #door-text .contact-link:nth-of-type(3) {
-      align-self: flex-start;
-      transform: translate(0.8vw, 1.2vh) rotate(0deg);
-    }
-
-    .contact-link:hover { opacity: 0.5; }
 
     /* ── Mosaic ───────────────────────────────────────────── */
 
@@ -207,46 +244,50 @@
 
     @media (max-width: 720px) {
       #door-text {
-        width: 92vw;
+        width: 98vw;
         min-height: 82vh;
-        padding: 4vh 4vw 3vh;
+        padding: 4vh 1.5vw 3vh 4vw;
         gap: 0.2em;
       }
       .contact-name {
         font-size: clamp(2.1rem, 10vw, 3.8rem);
         line-height: 0.92;
       }
+      .contact-layout {
+        gap: clamp(0.7rem, 2vw, 1.3rem);
+      }
+      .contact-links-rail {
+        padding-left: 14px;
+        padding-right: 0;
+      }
       .contact-role {
         font-size: clamp(1rem, 4.3vw, 1.45rem);
-        margin: 0 0 1vh;
-        transform: translate(-1vw, 0) rotate(-1deg);
+        margin: 0.3em 0 1vh;
+        transform: translate(-6px, -5px);
       }
       .contact-link {
-        font-size: clamp(0.96rem, 4.2vw, 1.3rem);
-        max-width: 86vw;
-      }
-      #door-text .contact-link:nth-of-type(1) {
-        transform: translate(0.3vw, 0) rotate(0deg);
-      }
-      #door-text .contact-link:nth-of-type(2) {
-        transform: translate(0.3vw, 0.45vh) rotate(0deg);
-      }
-      #door-text .contact-link:nth-of-type(3) {
-        transform: translate(0.3vw, 0.9vh) rotate(0deg);
+        font-size: clamp(1.2rem, 5.25vw, 1.625rem);
+        line-height: 1.05;
       }
     }
   </style>
 </head>
-<body>
+<body class="drawer-open initial-load">
 
-<div id="door-wrap" role="button" aria-label="Abrir contacto" aria-expanded="false" tabindex="0">
+<div id="door-wrap" role="button" aria-label="Abrir contacto" aria-expanded="true" tabindex="0">
   <div id="door-line"></div>
   <div id="door-text">
-    <p class="contact-name">MIGUEL ORTIGÃO</p>
-    <p class="contact-role">ARQUITETURA</p>
-    <a class="contact-link" href="mailto:mo@miguelortigao.com">mo@miguelortigao.com</a>
-    <a class="contact-link" href="tel:+351930708315">+351 930 708 315</a>
-    <a class="contact-link" href="https://instagram.com/miguelortigao" target="_blank" rel="noreferrer noopener">Instagram</a>
+    <div class="contact-layout">
+      <div class="contact-logo">
+        <p class="contact-name"><span class="name-line">MIGUEL</span><span class="name-line">ORTIGÃ<span class="name-last-char">O</span></span></p>
+        <p class="contact-role">ARQUITETUR<span class="role-last-char">A</span></p>
+      </div>
+      <div class="contact-links-rail">
+        <a class="contact-link" href="mailto:mo@miguelortigao.com">mo@miguelortigao.com</a>
+        <a class="contact-link" href="tel:+351930708315">+351 930 708 315</a>
+        <a class="contact-link" href="https://instagram.com/miguelortigao" target="_blank" rel="noreferrer noopener">@miguelortigao.arq</a>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -657,6 +698,79 @@
 
   // Start with the door open on first load.
   openDoor();
+
+  function syncContactRailHeight() {
+    var layout = document.querySelector('.contact-layout');
+    var nameLines = document.querySelectorAll('.contact-name .name-line');
+    var rail = document.querySelector('.contact-links-rail');
+    if (!layout || !rail || nameLines.length < 2) return;
+
+    var layoutRect = layout.getBoundingClientRect();
+    var topRect = nameLines[0].getBoundingClientRect();
+    var bottomRect = nameLines[nameLines.length - 1].getBoundingClientRect();
+
+    // One single rule: contact area is strictly the visual height of MIGUEL + ORTIGAO.
+    var areaTop = topRect.top - layoutRect.top;
+    var areaHeight = bottomRect.bottom - topRect.top;
+    if (areaHeight < 36) areaHeight = 36;
+
+    rail.style.setProperty('--contact-area-y', areaTop.toFixed(2) + 'px');
+    rail.style.setProperty('--contact-area-h', areaHeight.toFixed(2) + 'px');
+  }
+
+  function positionContactLinksInGrid() {
+    var rail = document.querySelector('.contact-links-rail');
+    if (!rail) return;
+
+    var links = rail.querySelectorAll('.contact-link');
+    if (links.length < 3) return;
+
+    if (!rail.dataset.colOrder) {
+      var cols = [4, 5, 6];
+      for (var i = cols.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = cols[i];
+        cols[i] = cols[j];
+        cols[j] = tmp;
+      }
+      rail.dataset.colOrder = cols.join(',');
+    }
+
+    var order = rail.dataset.colOrder.split(',').map(function(n) { return parseInt(n, 10); });
+    links.forEach(function(link, idx) {
+      var col = order[idx % 3];
+      if (!isFinite(col)) col = (idx % 3) + 1;
+      link.style.gridColumn = String(col);
+    });
+  }
+
+  function runContactLayoutPass() {
+    syncContactRailHeight();
+    positionContactLinksInGrid();
+
+    if (document.body.classList.contains('initial-load')) {
+      requestAnimationFrame(function() {
+        document.body.classList.remove('initial-load');
+      });
+    }
+  }
+
+  var contactLayoutRaf = 0;
+  function scheduleRoleAlignment() {
+    if (contactLayoutRaf) cancelAnimationFrame(contactLayoutRaf);
+    contactLayoutRaf = requestAnimationFrame(function() {
+      contactLayoutRaf = 0;
+      runContactLayoutPass();
+    });
+  }
+
+  window.addEventListener('resize', scheduleRoleAlignment, { passive: true });
+  window.addEventListener('load', scheduleRoleAlignment);
+  window.addEventListener('pageshow', scheduleRoleAlignment);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(scheduleRoleAlignment);
+  }
+  setTimeout(scheduleRoleAlignment, 0);
 
   doorWrap.addEventListener('transitionend', function(e) {
     if (e.propertyName !== 'transform') return;
