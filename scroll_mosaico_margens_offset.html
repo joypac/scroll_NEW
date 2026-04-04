@@ -254,11 +254,18 @@
         line-height: 0.92;
       }
       .contact-layout {
-        gap: clamp(0.7rem, 2vw, 1.3rem);
+        grid-template-columns: 1fr;
+        row-gap: clamp(0.55rem, 2.4vw, 0.95rem);
       }
       .contact-links-rail {
-        padding-left: 14px;
-        padding-right: 0;
+        height: auto;
+        transform: none;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(3, minmax(44px, auto));
+        column-gap: 0;
+        row-gap: 0.2rem;
+        padding-left: 10px;
+        padding-right: 6px;
       }
       .contact-role {
         font-size: clamp(1rem, 4.3vw, 1.45rem);
@@ -266,8 +273,13 @@
         transform: translate(-6px, -5px);
       }
       .contact-link {
-        font-size: clamp(1.2rem, 5.25vw, 1.625rem);
-        line-height: 1.05;
+        font-size: clamp(0.98rem, 4vw, 1.22rem);
+        line-height: 1.08;
+        width: 100%;
+        justify-self: stretch;
+        align-self: center;
+        text-align: left;
+        padding: 0.24em 0.2em;
       }
     }
   </style>
@@ -705,6 +717,12 @@
     var rail = document.querySelector('.contact-links-rail');
     if (!layout || !rail || nameLines.length < 2) return;
 
+    if (window.matchMedia('(max-width: 720px)').matches) {
+      rail.style.removeProperty('--contact-area-y');
+      rail.style.removeProperty('--contact-area-h');
+      return;
+    }
+
     var layoutRect = layout.getBoundingClientRect();
     var topRect = nameLines[0].getBoundingClientRect();
     var bottomRect = nameLines[nameLines.length - 1].getBoundingClientRect();
@@ -724,6 +742,13 @@
 
     var links = rail.querySelectorAll('.contact-link');
     if (links.length < 3) return;
+
+    if (window.matchMedia('(max-width: 720px)').matches) {
+      links.forEach(function(link) {
+        link.style.gridColumn = '1';
+      });
+      return;
+    }
 
     if (!rail.dataset.colOrder) {
       var cols = [4, 5, 6];
@@ -782,10 +807,12 @@
 
   doorWrap.addEventListener('click', function(e) {
     e.stopPropagation();
+    if (e.target.closest('.contact-link')) return;
     toggleDoor();
   });
 
   doorWrap.addEventListener('keydown', function(e) {
+    if (e.target.closest('.contact-link')) return;
     if (e.key !== 'Enter' && e.key !== ' ') return;
     e.preventDefault();
     toggleDoor();
