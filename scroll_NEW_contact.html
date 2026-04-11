@@ -415,6 +415,56 @@
 
   var DIRS = [[-1,0],[1,0],[0,-1],[0,1]];
 
+  function warmImageCache() {
+    var seen = Object.create(null);
+    var queue = [];
+
+    projects.forEach(function(project) {
+      project.media.forEach(function(item) {
+        if (item.type !== 'img') return;
+        if (seen[item.src]) return;
+        seen[item.src] = true;
+        queue.push(item.src);
+      });
+    });
+
+    if (!queue.length) return;
+
+    function consumeChunk(deadline) {
+      var budget = deadline && typeof deadline.timeRemaining === 'function'
+        ? Math.max(2, Math.floor(deadline.timeRemaining()))
+        : 5;
+
+      var count = 0;
+      while (queue.length && count < budget) {
+        var src = queue.shift();
+        var img = new Image();
+        img.decoding = 'async';
+        img.loading = 'eager';
+        img.src = src;
+        count++;
+      }
+
+      if (!queue.length) return;
+
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(consumeChunk, { timeout: 800 });
+      } else {
+        setTimeout(function() {
+          consumeChunk();
+        }, 80);
+      }
+    }
+
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(consumeChunk, { timeout: 1200 });
+    } else {
+      setTimeout(function() {
+        consumeChunk();
+      }, 220);
+    }
+  }
+
   /* ── Compact grid builder ─────────────────────────────────
      Fills a COLS×ROWS grid completely with project indices.
      No empty cells. Uses multi-source BFS with an anti-snake
@@ -790,8 +840,16 @@
     var lastTouchNavTs = 0;
     var resizeTimer = 0;
 
+    function targetToElement(target) {
+      if (!target) return null;
+      if (target.nodeType === 1) return target;
+      if (target.nodeType === 3) return target.parentElement;
+      return null;
+    }
+
     function isInteractiveTarget(target) {
-      return !!(target && target.closest && target.closest('a, button, input, textarea, select, label, #contact-trigger, #contact-panel, #contact-overlay, .contact-section-toggle, .contact-link'));
+      var el = targetToElement(target);
+      return !!(el && el.closest('a, button, input, textarea, select, label, #contact-trigger, #contact-panel, #contact-overlay, .contact-section-toggle, .contact-link'));
     }
 
     function viewportStep() {
@@ -878,7 +936,7 @@
       if (e.button !== 0) return;
       if (e.defaultPrevented) return;
 
-      var target = e.target;
+      var target = targetToElement(e.target);
       if (target && target.closest && target.closest('a, button, input, textarea, select, label')) return;
       goDown();
     }
@@ -903,7 +961,10 @@
 
     function onTouchEnd(e) {
       if (ContactOverlay.isOpen()) return;
-      if (touchStartedOnInteractive) return;
+      if (touchStartedOnInteractive) {
+        lastTouchNavTs = Date.now();
+        return;
+      }
 
       if (!e.changedTouches || !e.changedTouches[0]) return;
       var dy = e.changedTouches[0].clientY - touchStartY;
@@ -977,6 +1038,7 @@
   })();
 
   FrameNavigator.init();
+  warmImageCache();
   window.ContactOverlay = ContactOverlay;
   window.FrameNavigator = FrameNavigator;
 
